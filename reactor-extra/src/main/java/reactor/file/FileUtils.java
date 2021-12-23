@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Comparator;
 
 
 /**
@@ -86,6 +87,14 @@ public class FileUtils {
 		} catch (IOException e) {
 			throw Exceptions.propagate(e);
 		}
+	}
+
+	public static Flux<Boolean> deleteDirectory(final Path path, final boolean keepRoot) {
+		return walk(path)
+				.sort(Comparator.reverseOrder())
+				.filter(currentPath -> !(currentPath.equals(path) && keepRoot))
+				.map(Path::toFile)
+				.map(File::delete);
 	}
 
 	/**
